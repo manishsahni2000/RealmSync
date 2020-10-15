@@ -34,18 +34,11 @@
             android:layout_height="wrap_content"
             android:text="ADD" />
 
-        <Button
-            android:id="@+id/btnRead"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="READ" />
-
         <TextView
             android:id="@+id/textViewEmployees"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/cherry_swash_bold"
-            android:text="Result:"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textSize="14sp" />
 
