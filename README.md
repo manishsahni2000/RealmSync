@@ -1,6 +1,6 @@
 # RealmSync
 
-******* How to install ans use adb ********
+******* How to install abd use adb ********
 
 Install adb 
 
