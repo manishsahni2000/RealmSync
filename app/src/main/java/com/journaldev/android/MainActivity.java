@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -19,7 +20,11 @@ import io.realm.mongodb.App;
 import io.realm.mongodb.AppConfiguration;
 import io.realm.mongodb.Credentials;
 import io.realm.mongodb.User;
+import io.realm.mongodb.sync.Progress;
+import io.realm.mongodb.sync.ProgressListener;
+import io.realm.mongodb.sync.ProgressMode;
 import io.realm.mongodb.sync.SyncConfiguration;
+import io.realm.mongodb.sync.SyncSession;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 
@@ -29,6 +34,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private Realm mRealm;
     App app;
     Employee employee;
+   // private double latestState = -1.0;
 
 
     @Override
@@ -46,6 +52,27 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     void enableSync()
     {
+
+
+/*
+        SyncSession.  addDownloadProgressListener(ProgressMode.CURRENT_CHANGE
+                , new ProgressListener(){
+
+                    @ovverride
+                    public void onChange(Progress progress){
+
+
+                        if (progress.isTransferComplete() {
+                            sysout("send notificatiomn")
+                        }
+
+                    })
+
+                }
+*/
+
+
+
 
         Credentials credentials = Credentials.emailPassword("manish.sahni@mongodb.com", "realmsync");
         app.loginAsync(credentials, new App.Callback<User>() {
@@ -66,12 +93,17 @@ public class MainActivity extends Activity implements View.OnClickListener {
     protected void initialiseData(boolean login) {
         String partitionValue = "My Project";
         SyncConfiguration config = new SyncConfiguration.Builder(app.currentUser(),partitionValue)
-                .waitForInitialRemoteData().build();
-       // Use this to delete local realm files
+                .build();
+
+
+
+        // Use this to delete local realm files
         // Realm.deleteRealm(config);
 
         if(mRealm == null) {
             if (login) {
+
+              //  System.out.println("State is "+ latestState);
 
                 Realm.getInstanceAsync(config, new Realm.Callback() {
 
@@ -82,6 +114,45 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
                     @Override
                     public void onSuccess(Realm realm) {
+
+
+                      /*  SyncSession session = app.getSync().getSession(config);
+
+                        Thread downloadThread = new Thread(new DownloadServerChanges(session));
+                        downloadThread.start();
+
+                        Thread uploadThread = new Thread(new UploadServerChanges(session));
+                        uploadThread.start();
+
+
+                        session.addDownloadProgressListener(ProgressMode.INDEFINITELY, new ProgressListener() {
+                            @Override
+                            public void onChange(Progress progress) {
+                                if (progress.isTransferComplete()) {
+                                    System.out.println("Download Send Notification");
+                                }
+                                System.out.println("Download Progress"+ progress.getFractionTransferred());
+                                latestState = Double.parseDouble(String.valueOf(progress.getFractionTransferred()));
+
+                            }
+
+                        });
+
+
+
+                        session.addUploadProgressListener(ProgressMode.INDEFINITELY, new ProgressListener() {
+                            @Override
+                            public void onChange(Progress progress) {
+                                if (progress.isTransferComplete()) {
+                                    System.out.println("Upload Send Notification");
+                                }
+                                System.out.println("Upload Progress"+ progress.getFractionTransferred());
+                                latestState = Double.parseDouble(String.valueOf(progress.getFractionTransferred()));
+                            }
+
+                        });*/
+
+
 
                         MainActivity.this.mRealm=realm;
 
@@ -109,6 +180,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
             } else {
 
                 MainActivity.this.mRealm = Realm.getInstance(config);
+
+
             }
         }
     }
@@ -173,4 +246,36 @@ public class MainActivity extends Activity implements View.OnClickListener {
             mRealm.close();
         }
     }
+
+    /*class DownloadServerChanges implements Runnable{
+
+        private SyncSession session;
+        public DownloadServerChanges(SyncSession session){
+            this.session = session;
+        }
+        @Override
+        public void run() {
+            try {
+                System.out.println("Download STATUS FINAL "+session.downloadAllServerChanges(100, TimeUnit.SECONDS));
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    class UploadServerChanges implements Runnable{
+
+        private SyncSession session;
+        public UploadServerChanges(SyncSession session){
+            this.session = session;
+        }
+        @Override
+        public void run() {
+            try {
+                System.out.println("Upload STATUS FINAL "+session.uploadAllLocalChanges(100, TimeUnit.SECONDS));
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }*/
 }
